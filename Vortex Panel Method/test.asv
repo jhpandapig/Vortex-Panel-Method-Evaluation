@@ -1,0 +1,22 @@
+airfoil = generateAirfoil('2412',10);
+AoA = pi/8;
+vss = calculateVSS(airfoil,AoA);
+
+M = NaN(N);     % M(i,j) is the jth panel's influence on the ith's normal velocity. 
+
+for i = 1:N 
+    for j = 1:N 
+        x = airfoil.panelCentre(i,1); 
+        y = airfoil.panelCentre(i,2);
+        X = airfoil.panelBoundary(j,1);
+        Y = airfoil.panelBoundary(j,2);
+        s = airfoil.panelLength(j);
+        C1 = sin(airfoil.phi(j) - airfoil.delta(i));
+        C2 = cos(airfoil.phi(i)) * (x-X) + sin(airfoil.phi(i)) * (y-Y);
+        C3 = cos(airfoil.phi(j)) * (X-x) + sin(airfoil.phi(j)) * (Y-y);
+        C4 = (x-X)^2 + (y-Y)^2;
+        C5 = sqrt(C4 - C3^2);
+        syms z
+        expr = 1/(2*pi)*(vss(j) + (vss(j+1) - vss(j))*z/)
+    end
+end

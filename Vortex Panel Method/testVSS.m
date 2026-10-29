@@ -1,0 +1,53 @@
+% Test the no-penetration condition using solution of VSS (passed). 
+
+airfoil = generateAirfoil('2412',50);
+AoA = pi/8;
+vss = calcVSS(airfoil,AoA);
+
+N = airfoil.N;
+M = NaN(N);     % M(i,j) is the jth panel's influence on the ith's normal velocity. d(phiJ)/d(nI). 
+
+for i = 1:N 
+    for j = 1:N 
+        if i==j
+            M(i,j) = 1/(2*pi)*(vss(j) - vss(j+1));
+        else
+            x = airfoil.panelCentre(i,1); 
+            y = airfoil.panelCentre(i,2);
+            X = airfoil.panelBoundary(j,1);
+            Y = airfoil.panelBoundary(j,2);
+            s = airfoil.panelLength(j);
+            C1 = sin(airfoil.phi(j) - airfoil.delta(i));
+            C2 = cos(airfoil.phi(i)) * (x-X) + sin(airfoil.phi(i)) * (y-Y);
+            C3 = cos(airfoil.phi(j)) * (X-x) + sin(airfoil.phi(j)) * (Y-y);
+            C4 = (x-X)^2 + (y-Y)^2;
+            C5 = sqrt(C4 - C3^2);
+            syms z
+            expr = 1/(2*pi)*(vss(j) + (vss(j+1) - vss(j))*z/s)* (C1*z + C2) / ((z+C3)^2 + C5^2);
+            M(i,j) = vpaintegral(expr,z,[0 s]);
+            clear z
+        end
+    end
+end
+
+% Initialise freestream velocity's normal component on ith panel. 
+normalFree = cos(airfoil.delta - AoA);
+
+% Initialise inducedFlow. 
+inducedFlow = (M*ones(size(M,2), 1))';
+
+% Normal velocity component. 
+Un = normalFree + inducedFlow;
+
+for i = 1:length(normalFree)
+    if abs(Un) > 1*10^-8
+        disp("Normal freestream component: ")
+        disp(normalFree(i))
+
+        disp("Normal induced component: ")
+        disp(inducedFlow(i))
+
+        disp("Combined flow (should equal 0): ")
+        disp(Un(i))
+    end
+end
