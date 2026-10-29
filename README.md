@@ -3,9 +3,9 @@
 
 **An Independent Computational Aerodynamics Project | MATLAB**
 
-This repository contains a MATLAB implementation of the two-dimensional Vortex Panel Method (VPM), together with numerical investigations into its convergence, reliability, and aerodynamic predictions.
+This repository contains a MATLAB implementation of the two-dimensional Vortex Panel Method (VPM), together with numerical investigations into its convergence, numerical reliability, and aerodynamic predictions.
 
-The project aims to evaluate the numerical behaviour and limitations of the VPM through systematic comparisons of panel discretisation, alternative lift-calculation methods, and established aerodynamic models such as Thin Airfoil Theory (TAT) and XFOIL.
+The project evaluates the numerical behaviour and limitations of VPM through systematic comparisons of panel discretisation, alternative lift-calculation methods, and established aerodynamic models such as Thin Airfoil Theory (TAT) and XFOIL.
 
 The work is undertaken independently as a technical investigation into computational aerodynamics and numerical methods.
 
@@ -22,7 +22,7 @@ The principal objectives are to:
    - Kutta–Joukowski circulation
    - Surface pressure integration
    - Control-volume momentum conservation
-5. Investigate the sensitivity of surface pressure predictions to the pressure-sampling distance.
+5. Investigate the sensitivity of surface pressure predictions to pressure-sampling distance.
 6. Compare aerodynamic predictions from VPM, Thin Airfoil Theory, and XFOIL.
 7. Distinguish numerical discretisation errors from differences arising from the physical assumptions of aerodynamic models.
 
@@ -83,43 +83,43 @@ Vortex Panel Method Evaluation/
     └── [Separate TAT implementation]
 ```
 
-The repository is divided into two principal components:
+The repository is divided into two principal components.
 
-**Vortex Panel Method/** contains the numerical solver and supporting functions used to generate aerofoil geometries, determine vortex-sheet strengths, calculate aerodynamic quantities, and visualise the resulting flow.
+**`Vortex Panel Method/`** contains the numerical solver and supporting functions used to generate aerofoil geometries, determine vortex-sheet strengths, calculate aerodynamic quantities, and visualise the resulting flow.
 
-The MATLAB scripts in the **main directory** are used to conduct the numerical investigations supporting the technical report.
+The MATLAB scripts in the **main directory** conduct the numerical investigations supporting the technical report.
 
-The **Thin Airfoil Theory/** directory contains a separate implementation used for comparison with the VPM.
+The **`Thin Airfoil Theory/`** directory contains a separate implementation used for comparison with VPM.
 
-The directory structure assumes that uploaded files have been restored to their original MATLAB filenames without automatically appended suffixes such as `(1)` or `(2)`.
+The structure assumes that uploaded files have been restored to their original MATLAB filenames without automatically appended suffixes such as `(1)` or `(2)`.
 
 ---
 
 ## 3. Mathematical Formulation
 
-### 3.1 Governing assumptions
+### 3.1 Governing Assumptions
 
 The Vortex Panel Method models steady, two-dimensional, incompressible, inviscid, and irrotational flow outside the vortex-sheet singularities.
 
 The velocity field can be expressed through a velocity potential:
 
-\[
+$$
 \mathbf{V}=\nabla\phi
-\]
+$$
 
 For incompressible, irrotational flow, the potential satisfies Laplace's equation:
 
-\[
+$$
 \nabla^2\phi=0
-\]
+$$
 
 The aerofoil boundary is represented by a vortex sheet whose strength varies along the surface.
 
 The circulation around the aerofoil is determined by the vortex-sheet distribution, subject to the no-penetration boundary condition and the Kutta condition.
 
-### 3.2 Panel discretisation
+### 3.2 Panel Discretisation
 
-The aerofoil boundary is divided into \(N\) straight panels.
+The aerofoil boundary is divided into $N$ straight panels.
 
 Each panel has:
 
@@ -131,89 +131,93 @@ Each panel has:
 
 The vortex-sheet strength is assumed to vary linearly between consecutive panel endpoints.
 
-For panel \(j\):
+For panel $j$:
 
-\[
+$$
 \gamma_j(s)=
 \gamma_j+
 \frac{\gamma_{j+1}-\gamma_j}{L_j}s
-\]
+$$
 
-where \(L_j\) is the panel length and \(0\leq s\leq L_j\).
+where $L_j$ is the panel length and $0\leq s\leq L_j$.
 
-The complete discretisation contains \(N+1\) vortex-sheet-strength unknowns.
+The complete discretisation contains $N+1$ vortex-sheet-strength unknowns.
 
-### 3.3 Boundary conditions
+### 3.3 Boundary Conditions
 
 The no-penetration condition requires:
 
-\[
+$$
 \mathbf{V}\cdot\mathbf{n}=0
-\]
+$$
 
 at every panel control point.
 
 The velocity consists of the freestream and vortex-induced contributions:
 
-\[
+$$
 \mathbf{V}
 =
 \mathbf{V}_{\infty}
 +
 \mathbf{V}_{\mathrm{induced}}
-\]
+$$
 
-Enforcing no penetration at \(N\) control points provides \(N\) linear equations.
+Enforcing no penetration at $N$ control points provides $N$ linear equations.
 
 An additional equation is supplied by the trailing-edge Kutta condition.
 
 For the vortex-strength and panel-orientation convention used in the implementation, the discrete Kutta condition is:
 
-\[
+$$
 \gamma_1+\gamma_{N+1}=0
-\]
+$$
 
 The resulting system is:
 
-\[
+$$
 \mathbf{M}\boldsymbol{\gamma}=\mathbf{b}
-\]
+$$
 
 where:
 
-- \(\mathbf{M}\) is the augmented aerodynamic influence matrix.
-- \(\boldsymbol{\gamma}\) contains the unknown endpoint vortex-sheet strengths.
-- \(\mathbf{b}\) contains the freestream normal-velocity contributions and the Kutta-condition constraint.
+- $\mathbf{M}$ is the augmented aerodynamic influence matrix.
+- $\boldsymbol{\gamma}$ contains the unknown endpoint vortex-sheet strengths.
+- $\mathbf{b}$ contains the freestream normal-velocity contributions and the Kutta-condition constraint.
 
 The system is assembled and solved in `calcVSS.m`.
 
-### 3.4 Velocity and pressure
+### 3.4 Velocity and Pressure
 
 Once the vortex-sheet strengths are known, the induced velocity field is calculated by summing the contributions of all panels.
 
 The complete velocity field is:
 
-\[
-\mathbf{V}=\mathbf{V}_{\infty}+\sum_j\mathbf{V}_j
-\]
+$$
+\mathbf{V}
+=
+\mathbf{V}_{\infty}
++
+\sum_j\mathbf{V}_j
+$$
 
 The pressure coefficient is calculated using the incompressible Bernoulli relationship:
 
-\[
+$$
 C_p=1-\frac{|\mathbf{V}|^2}{U_\infty^2}
-\]
+$$
 
 The implementation uses a nondimensional freestream velocity of:
 
-\[
+$$
 U_\infty=1
-\]
+$$
 
 Therefore:
 
-\[
+$$
 C_p=1-(U^2+V^2)
-\]
+$$
 
 ---
 
@@ -229,7 +233,7 @@ These methods provide complementary checks of the numerical solution, although t
 
 The pressure coefficient is evaluated at points displaced a small distance outside the panel centres.
 
-The pressure force is approximated using a midpoint integration over the panels.
+The pressure force is approximated using midpoint integration over the panels.
 
 The lift is obtained by resolving the resulting pressure forces perpendicular to the freestream.
 
@@ -251,25 +255,25 @@ The circulation is calculated by integrating the vortex-sheet strength along the
 
 For the piecewise-linear vortex-sheet distribution:
 
-\[
+$$
 \Gamma=
 \sum_{j=1}^{N}
 \frac{\gamma_j+\gamma_{j+1}}{2}L_j
-\]
+$$
 
 The trapezoidal expression is exact for each represented linear-strength panel.
 
 The lift per unit span is obtained from the Kutta–Joukowski theorem:
 
-\[
+$$
 L'=\rho U_\infty\Gamma
-\]
+$$
 
 With unit chord and freestream velocity, the lift coefficient is:
 
-\[
+$$
 C_L=2\Gamma
-\]
+$$
 
 The code applies the circulation sign convention consistent with its panel orientation.
 
@@ -283,13 +287,13 @@ The third method applies the steady integral momentum equation to a rectangular 
 
 For steady, inviscid flow without additional body forces:
 
-\[
+$$
 \mathbf{F}_{\mathrm{airfoil}}
 =
 \mathbf{F}_{\mathrm{outer\ pressure}}
 -
 \mathbf{F}_{\mathrm{momentum\ flux}}
-\]
+$$
 
 The implementation evaluates:
 
@@ -303,7 +307,7 @@ Numerical integration is performed using MATLAB's `trapz` function.
 
 The control-volume dimensions and grid spacing can be adjusted within `calcCL3.m`.
 
-### 4.4 Comparing the methods
+### 4.4 Comparing the Methods
 
 The script `liftMethodComparison.m` compares the lift coefficients predicted by the three methods over a range of angles of attack.
 
@@ -317,9 +321,10 @@ However, agreement does not independently establish the physical accuracy of the
 
 The scripts in the main repository directory support the technical report.
 
-### 5.1 Panel-count convergence
+### 5.1 Panel-Count Convergence
 
 **Scripts:**
+
 - `plotCL_N.m`
 - `errorPlot.m`
 - `errorPowerLaw.m`
@@ -330,35 +335,35 @@ The investigation examines whether the numerical solution approaches an asymptot
 
 A power-law model is used:
 
-\[
+$$
 C_L(N)=C_{L,\infty}+kN^{-p}
-\]
+$$
 
 where:
 
-- \(C_{L,\infty}\) is the extrapolated infinite-panel lift coefficient.
-- \(k\) is a fitted constant.
-- \(p\) is the observed convergence exponent.
+- $C_{L,\infty}$ is the extrapolated infinite-panel lift coefficient.
+- $k$ is a fitted constant.
+- $p$ is the observed convergence exponent.
 
-Trial exponents are assessed using linear least-squares regression and the coefficient of determination, \(R^2\).
+Trial exponents are assessed using linear least-squares regression and the coefficient of determination, $R^2$.
 
 Richardson-style estimates are also used to examine the observed convergence order.
 
 For successive meshes with refinement ratio two:
 
-\[
+$$
 p=
 \log_2\left|
 \frac{C_L(N)-C_L(2N)}
 {C_L(2N)-C_L(4N)}
 \right|
-\]
+$$
 
 This expression assumes an asymptotic power-law error and geometrically refined meshes.
 
-A high regression \(R^2\) indicates goodness of fit over the tested data but does not by itself prove asymptotic convergence.
+A high regression $R^2$ indicates goodness of fit over the tested data but does not by itself prove asymptotic convergence.
 
-### 5.2 Uniform versus cosine panel spacing
+### 5.2 Uniform Versus Cosine Panel Spacing
 
 The aerofoil generator supports two chordwise panel distributions:
 
@@ -369,17 +374,17 @@ The distribution is selected using the `cosDistribution` variable in `generateNa
 
 For cosine spacing:
 
-\[
+$$
 x=\frac{1-\cos\theta}{2}
-\]
+$$
 
-with uniformly spaced values of \(\theta\) between \(0\) and \(\pi\).
+with uniformly spaced values of $\theta$ between $0$ and $\pi$.
 
 This concentrates smaller panels near the leading and trailing edges.
 
 The investigation compares how the distribution affects the observed convergence of lift predictions.
 
-### 5.3 Influence-matrix conditioning
+### 5.3 Influence-Matrix Conditioning
 
 The influence matrix is investigated as the number of panels and aerofoil geometry are varied.
 
@@ -402,25 +407,25 @@ is one possible source of numerical sensitivity when the two terms being subtrac
 
 The precise causes of numerical failure require further investigation.
 
-### 5.4 Pressure-sampling sensitivity
+### 5.4 Pressure-Sampling Sensitivity
 
 **Script:** `Vortex Panel Method/plotCpGraph.m`
 
 The pressure coefficient is evaluated at different distances from the panel centres:
 
-\[
+$$
 \varepsilon=10^{-p}
-\]
+$$
 
 The investigation examines the sensitivity of the pressure distribution and pressure-derived lift coefficient to this offset.
 
 A power-law model is fitted:
 
-\[
+$$
 C_L(\varepsilon)=C_{L,0}+k\varepsilon^q
-\]
+$$
 
-where \(C_{L,0}\) represents the extrapolated zero-offset lift coefficient.
+where $C_{L,0}$ represents the extrapolated zero-offset lift coefficient.
 
 This investigation concerns pressure-evaluation sensitivity rather than panel-count convergence.
 
@@ -446,11 +451,19 @@ XFOIL data are imported from text polar files rather than generated directly by 
 
 Comparisons with XFOIL are numerical model comparisons, not experimental validation.
 
+### 5.6 Example: NACA 2412 Lift Comparison
+
+![NACA 2412 lift comparison](NACA2412_CL.png)
+
+The figure compares lift-coefficient predictions for NACA 2412.
+
+Differences between methods may arise from their respective physical assumptions, geometric approximations, and numerical formulations.
+
 ---
 
 ## 6. MATLAB Function Reference
 
-### 6.1 Geometry and vortex-sheet solver
+### 6.1 Geometry and Vortex-Sheet Solver
 
 | File | Description |
 |---|---|
@@ -459,7 +472,7 @@ Comparisons with XFOIL are numerical model comparisons, not experimental validat
 | `calcVSS.m` | Assembles and solves the augmented influence-matrix system for vortex-sheet strengths. |
 | `intSF.m` | Evaluates analytical influence-integral expressions used by the solver. |
 
-### 6.2 Flow-field calculations
+### 6.2 Flow-Field Calculations
 
 | File | Description |
 |---|---|
@@ -469,7 +482,7 @@ Comparisons with XFOIL are numerical model comparisons, not experimental validat
 | `calcPressure.m` | Calculates the pressure coefficient from the velocity field. |
 | `calcStreamline.m` | Numerically traces streamlines through the calculated velocity field. |
 
-### 6.3 Aerodynamic coefficients
+### 6.3 Aerodynamic Coefficients
 
 | File | Description |
 |---|---|
@@ -490,7 +503,7 @@ Comparisons with XFOIL are numerical model comparisons, not experimental validat
 | `plotFlowRotated.m` | Plots the flow field in freestream-aligned coordinates. |
 | `plotPressureField.m` | Generates a coloured pressure-coefficient contour plot. |
 
-### 6.5 Coordinate transformations and testing
+### 6.5 Coordinate Transformations and Testing
 
 | File | Description |
 |---|---|
@@ -518,7 +531,7 @@ Some optional development scripts use symbolic functions such as `syms` and `vpa
 
 The TAT comparison requires the separate Thin Airfoil Theory implementation.
 
-### 7.2 Getting started
+### 7.2 Getting Started
 
 Clone or download the repository and open MATLAB.
 
@@ -534,7 +547,7 @@ Add the solver folder to the MATLAB search path:
 addpath('Vortex Panel Method')
 ```
 
-### 7.3 Generate an aerofoil
+### 7.3 Generate an Aerofoil
 
 ```matlab
 airfoil = generateAirfoil('2412', 200);
@@ -551,9 +564,9 @@ ylabel('y/c');
 title('NACA 2412 Aerofoil');
 ```
 
-The airfoil structure contains the panel coordinates, centres, lengths, directions, and outward normals.
+The aerofoil structure contains the panel coordinates, centres, lengths, directions, and outward normals.
 
-### 7.4 Calculate vortex-sheet strengths
+### 7.4 Calculate Vortex-Sheet Strengths
 
 ```matlab
 airfoil = generateAirfoil('2412', 200);
@@ -565,7 +578,7 @@ vss = calcVSS(airfoil, AoA);
 
 Angles of attack are specified in radians.
 
-### 7.5 Calculate lift using circulation
+### 7.5 Calculate Lift Using Circulation
 
 ```matlab
 airfoil = generateAirfoil('2412', 200);
@@ -577,7 +590,7 @@ CL = calcCL2(airfoil, AoA);
 fprintf('CL = %.6f\n', CL);
 ```
 
-### 7.6 Compare lift-calculation methods
+### 7.6 Compare Lift-Calculation Methods
 
 ```matlab
 airfoil = generateAirfoil('2412', 200);
@@ -595,7 +608,7 @@ fprintf('Momentum:    %.6f\n', CL_momentum);
 
 The three methods can be compared to investigate numerical consistency.
 
-### 7.7 Generate pressure and velocity plots
+### 7.7 Generate Pressure and Velocity Plots
 
 Run the scripts:
 
@@ -613,7 +626,7 @@ plotFlowRotated
 
 The relevant aerofoil, angle of attack, mesh resolution, and plotting limits are specified near the beginning of each script.
 
-### 7.8 Run the numerical investigations
+### 7.8 Run the Numerical Investigations
 
 From the main repository directory:
 
@@ -643,7 +656,7 @@ The supplied polar files identify:
 - Aerofoil: NACA 2412
 - Reynolds number: 1,000,000
 - Mach number: 0.1
-- Critical amplification factor: Ncrit = 9
+- Critical amplification factor: $N_{\mathrm{crit}}=9$
 
 The polar data include angle of attack, lift coefficient, drag coefficient, pitching-moment coefficient, and transition locations.
 
@@ -655,7 +668,7 @@ Because the XFOIL data are generated using a different aerodynamic model, discre
 
 ## 9. Known Limitations
 
-### 9.1 Physical modelling
+### 9.1 Physical Modelling
 
 The VPM assumes inviscid, incompressible potential flow.
 
@@ -671,7 +684,7 @@ Consequently, it does not directly predict:
 
 The results should not be interpreted as complete predictions of real viscous aerofoil behaviour.
 
-### 9.2 Numerical limitations
+### 9.2 Numerical Limitations
 
 The solver may become sensitive to panel geometry and numerical precision at high panel counts.
 
@@ -681,7 +694,7 @@ Surface pressure integration introduces additional sensitivity to the sampling o
 
 The observed convergence order can depend on panel distribution, aerofoil geometry, and the aerodynamic quantity being evaluated.
 
-### 9.3 Implementation limitations
+### 9.3 Implementation Limitations
 
 The current geometry generator supports NACA four-digit aerofoils.
 
@@ -741,8 +754,7 @@ These are potential extensions rather than completed features.
 
 2. Drela, M. (1989). *XFOIL: An Analysis and Design System for Low Reynolds Number Airfoils*. Lecture Notes in Engineering, Vol. 54.
 
-3. XFOIL Documentation:
-   https://v0xnihili.github.io/xfoil-docs/formulations/
+3. [XFOIL Formulation Documentation](https://v0xnihili.github.io/xfoil-docs/formulations/)
 
 ---
 
