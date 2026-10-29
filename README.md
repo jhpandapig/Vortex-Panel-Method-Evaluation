@@ -413,7 +413,7 @@ The investigation examines the sensitivity of the pressure distribution and pres
 A power-law model is fitted:
 
 $$
-C_L(\varepsilon)=C_{L,0}+k\varepsilon^q
+C_L(\varepsilon)=C_{L,0}+k\varepsilon^{-q}
 $$
 
 where $C_{L,0}$ represents the extrapolated zero-offset lift coefficient.
@@ -743,15 +743,15 @@ These are potential extensions rather than completed features.
 
 1. Houghton, E. L., Carpenter, P. W., Collicott, S. H. and Valentine, D. T. (2013). *Aerodynamics for Engineering Students*. 6th ed. Butterworth-Heinemann.
 
-2. Drela, M. (1989). *XFOIL: An Analysis and Design System for Low Reynolds Number Airfoils*. Lecture Notes in Engineering, Vol. 54.
-
-3. [XFOIL Formulation Documentation](https://v0xnihili.github.io/xfoil-docs/formulations/)
+2. [XFOIL Formulation Documentation](https://v0xnihili.github.io/xfoil-docs/formulations/)
 
 ---
 
 ## Project Status
 
 **Ongoing independent technical investigation.**
+
+A preliminary evaluation has been released. 
 
 The vortex panel solver and several numerical investigations have been implemented.
 
