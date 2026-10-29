@@ -189,13 +189,9 @@ Once the vortex-sheet strengths are known, the induced velocity field is calcula
 
 The complete velocity field is:
 
-$$
-\mathbf{V}
-=
-\mathbf{V}_{\infty}
-+
-\sum_j\mathbf{V}_j
-$$
+
+$$\mathbf{V} = \mathbf{V}_{\infty} + \mathbf{V}_{\mathrm{induced}}$$
+
 
 The pressure coefficient is calculated using the incompressible Bernoulli relationship:
 
