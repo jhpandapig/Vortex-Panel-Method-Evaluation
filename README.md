@@ -156,11 +156,7 @@ at every panel control point.
 The velocity consists of the freestream and vortex-induced contributions:
 
 $$
-\mathbf{V}
-=
-\mathbf{V}_{\infty}
-+
-\mathbf{V}_{\mathrm{induced}}
+\mathbf{V} = \mathbf{V}_{\infty} + \mathbf{V}_{\mathrm{induced}}
 $$
 
 Enforcing no penetration at $N$ control points provides $N$ linear equations.
