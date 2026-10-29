@@ -9,6 +9,8 @@ The project evaluates the numerical behaviour and limitations of VPM through sys
 
 The work is undertaken independently as a technical investigation into computational aerodynamics and numerical methods.
 
+README written by ChatGPT, verified by Jin Hao. 
+
 ---
 
 ## 1. Project Objectives
@@ -36,6 +38,7 @@ The accompanying technical report develops and evaluates these investigations.
 Vortex Panel Method Evaluation/
 │
 ├── README.md
+├── [FILE NAME]
 │
 ├── compareTAT_VPM.m
 ├── errorPlot.m
@@ -280,11 +283,7 @@ The third method applies the steady integral momentum equation to a rectangular 
 For steady, inviscid flow without additional body forces:
 
 $$
-\mathbf{F}_{\mathrm{airfoil}}
-=
-\mathbf{F}_{\mathrm{outer\ pressure}}
--
-\mathbf{F}_{\mathrm{momentum\ flux}}
+\mathbf{F}_{\mathrm{airfoil}}=\mathbf{F}_{\mathrm{outer\ pressure}}-\mathbf{F}_{\mathrm{momentum\ flux}}
 $$
 
 The implementation evaluates:
